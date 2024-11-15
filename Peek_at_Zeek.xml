@@ -1,0 +1,286 @@
+<form version="1.1">
+  <label>Peek@Zeek</label>
+  <description>Hey Bro, whaddya know?</description>
+  <!-- this dashboard assumes an index=bro and standard default sourcetypes James Callahan, Professional Paranoid -->
+  <fieldset submitButton="false">
+    <input type="time" token="timeraroo">
+      <label>Look Back</label>
+      <default>
+        <earliest>-12h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Max Percent Loss / bro_capture_loss</title>
+      <chart>
+        <search>
+          <query>sourcetype=bro_capture_loss 
+          |fields percent_lost acks |timechart span=18m max(percent_lost) AS Percent_Loss sum(acks) as Acks</query>
+          <earliest>$timeraroo.earliest$</earliest>
+          <latest>$timeraroo.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>&gt;<option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-90</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">log</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">top</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Bro Packet Stats / bro_stats</title>
+      <chart>
+        <search>
+          <query>index=bro   sourcetype=bro_stats |fields pkts_dropped pkts_proc
+          |timechart sum(pkts_dropped) AS "Dropped Packets" sum(pkts_proc) AS "Processed Packets"</query>
+          <earliest>$timeraroo.earliest$</earliest>
+          <latest>$timeraroo.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-90</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">log</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">top</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Sourcetypes Repartition (last 6 hours)</title>
+        <search>
+          <query>|metasearch index=bro |timechart count by sourcetype useother=f limit=0</query>
+          <earliest>$timeraroo.earliest$</earliest>
+          <latest>$timeraroo.latest$</latest>
+        </search>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">log</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="height">539</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Top Highest Volume per IP Source and Destination (last 6 hours)</title>
+        <search>
+          <query>index=bro sourcetype=bro_conn 
+            | stats sum(orig_ip_bytes) as i sum(resp_ip_bytes) as o by id.orig_h id.resp_h 
+| eval r=if(i&gt;0, round(o/i, 2), 0) 
+| search r &gt; 0 
+| eval x=if(r &gt; 1.1, "Upload", if(r &gt; 0.9, "Symetric", "Download")) 
+| rename id.resp_h AS clientip
+| lookup dnslookup clientip 
+| lookup inventory_all.csv ip AS id.orig_h OUTPUT client AS client_orig
+| table id.orig_h,client_orig clientip, clienthost,i,o,x 
+| sort 10 -i,o 
+| rename i as "Input Bytes" o as "Output Bytes" x as "Flow Type" id.orig_h as "Source Host" client_orig AS "Source Host Name" clientip as "Remote Host" clienthost AS "Remote Host Name"</query>
+          <earliest>$timeraroo.earliest$</earliest>
+          <latest>$timeraroo.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">row</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Destination port over time (last 6 hours)</title>
+        <search>
+          <query>index=bro sourcetype=bro_conn  id.orig_h!=192.168.0.27 proto!=icmp id.orig_p!=5353
+resp_pkts!=0
+| timechart span=10m count by id.resp_p useother=f limit=0</query>
+          <earliest>$timeraroo.earliest$</earliest>
+          <latest>$timeraroo.latest$</latest>
+        </search>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Now that's Weird...(Last 12 hours) Stats</title>
+      <table>
+        <search>
+          <query>index=bro sourcetype=bro_weird |rename id.orig_h as src_ip, id.orig_p as src_port, id.resp_h as dest_ip, 
+   id.resp_p as dest_port |search
+NOT (src_ip=192.168.* dest_ip=192.168.*)  src_ip!=192.168.0.6
+|eval name=if(match(name,"(?i)binpac"), "binpac exception", name)
+|rename  name AS Concern
+|stats dc(src_ip) AS src_ips dc(dest_ip) AS dest_ips count by Concern
+|table Concern, src_ips, dest_ips  count |sort - count</query>
+          <earliest>$timeraroo.earliest$</earliest>
+          <latest>$timeraroo.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <set token="concern">$click.value$</set>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$concern$">
+      <title>Weird Drilldown $concern$</title>
+      <table>
+        <search>
+          <query>index=bro sourcetype=bro_weird 
+          |rename id.orig_h as src_ip, id.orig_p as src_port, id.resp_h as dest_ip, 
+   id.resp_p as dest_port |search
+          name="*$concern$*"
+NOT (src_ip=192.168.* dest_ip=192.168.*)  src_ip!=192.168.0.6
+|rename dest_ip AS clientip
+| lookup dnslookup clientip
+|rename clientip AS dest_ip, clienthost AS dest_hostname 
+|rename src_ip AS clientip, name AS Concern
+| lookup dnslookup clientip
+|fillnull value=" " dest_hostname
+|stats values(clienthost) as src_hostname values(dest_hostname) AS dest_hostname count by Concern clientip, dest_ip 
+|rename clientip AS src_ip
+|table count, Concern, src_ip, src_hostname, dest_ip, dest_hostname |sort - count</query>
+          <earliest>$timeraroo.earliest$</earliest>
+          <latest>$timeraroo.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">15</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Website Traffic Analysis (Outbound) (Last 12 hours)</title>
+      <table>
+        <search>
+          <query>index=bro sourcetype=bro_http 
+|rename id.orig_h as src_ip, id.orig_p as src_port, id.resp_h as dest_ip,id.resp_p as dest_port |search
+src_ip=192.168.* user_agent!="Splunk Website Monitoring (+https://splunkbase.splunk.com/app/1493/)"     
+| stats  dc(src_ip) AS "src_ip Count"  dc(uri) AS pages count by dvc 
+|rename dvc as Website
+|table Website, pages, count "src_ip Count" |sort - pages</query>
+          <earliest>$timeraroo.earliest$</earliest>
+          <latest>$timeraroo.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">15</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>bro_http analysis</title>
+      <table>
+        <search>
+          <query>index=bro sourcetype=bro_http 
+          |rename id.orig_h as src_ip, id.orig_p as src_port, id.resp_h as dest_ip,id.resp_p as dest_port |search
+          dest_ip!=67.208.74.71 dest_ip!=52.5.37.243 
+|stats dc(uri) dc(dest_ip) as dest_ips count by src_ip  host   status_code status_msg
+|table count dc(uri) src_ip dest_ips status_code status_msg host |sort - count
+|search host!=dearthir</query>
+          <earliest>$timeraroo.earliest$</earliest>
+          <latest>$timeraroo.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">15</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>
